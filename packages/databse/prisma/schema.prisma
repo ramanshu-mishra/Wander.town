@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model Session {
+  id        String   @id @default(cuid())
+  sid       String   @unique
+  data      String
+  expiresAt   DateTime
+}
+
+
+model User {
+  id  String @id @unique @default(cuid())
+  username String @unique 
+  password String? 
+  name String
+  host_spaces Spaces[] @relation("hostSpaces")
+  cohost_spaces Spaces[] @relation("cohostSpaces")
+  member_spaces Spaces[] @relation("memberSpaces")
+  avatarId String?
+  avatar Avatar? @relation(fields: [avatarId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  activeSession String?
+
+}
+
+model Avatar{
+  id String @id @unique @default(cuid())
+  name String @default("default")
+  hairId String 
+  eyesId String
+  shirtId String
+  pantsId String
+  mustacheId String
+  beardId String
+  
+  
+  user User[]
+  hair Hair @relation(fields: [hairId], references: [id])
+  beard Beard @relation(fields: [beardId], references: [id])
+  eyes Eyes @relation(fields: [eyesId], references: [id])
+  shirt Shirts @relation(fields: [shirtId], references: [id])
+  pants Pants @relation(fields: [pantsId],references: [id])
+  mustache Mustache @relation(fields: [mustacheId], references: [id])
+
+
+}
+
+model Spaces{
+  id String @id @unique @default(cuid())
+  map_id String @unique
+  host_id String
+  host User @relation("hostSpaces",fields: [host_id], references: [id])
+  map Maps? 
+  cohosts   User[]  @relation("cohostSpaces")
+  members   User[]  @relation("memberSpaces")
+}
+
+model Maps{
+  id String @id @unique @default(cuid())
+  height Int
+  width Int
+  elements MapElements[]
+  image String
+  thumbnail String
+ spaceId String?  @unique   
+  space   Spaces?  @relation(fields: [spaceId], references: [id])
+}
+
+model DefaultMaps{
+  id String @id @unique @default(cuid())
+  height Int
+  width Int
+  image String
+  thumbnail String
+}
+
+model MapElements{
+  id String @id @unique @default(cuid())
+  x Int
+  y Int
+  elementid String
+  mapid String
+  map Maps @relation(fields: [mapid], references: [id])
+  element Elements @relation(fields: [elementid], references: [id])
+}
+
+model Elements{
+ id String @id @unique @default(cuid())
+ name String
+ height Int
+ width Int
+ image String
+  mapElements MapElements[]
+}
+
+model Hair{
+ id String @id @unique  @default(cuid())
+  colorId  String
+  avatars Avatar[]
+  image String
+  
+}
+
+model Color{
+  id String @id @unique @default(cuid())
+  name String
+  Image String
+}
+
+model Beard{
+id String @id @unique  @default(cuid())
+hairId String
+colorId String
+avatars Avatar[]
+image String
+}
+
+model Mustache{
+id String @id @unique  @default(cuid())
+colorId String
+avatars Avatar[]
+image String
+}
+
+model Shirts{
+id String @id @unique  @default(cuid())
+avatars Avatar[]
+image String
+
+}
+model Pants{
+id String @id @unique  @default(cuid())
+avatars Avatar[]
+image String
+
+}
+model Eyes{
+id String @id @unique  @default(cuid())
+colorId String
+avatars Avatar[]
+image String
+}
+
+
+
+// I will create a seperate dev server for adding elements in map
+// I am currently not allowing users to add elements to map and add avatar images

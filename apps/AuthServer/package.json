@@ -1,0 +1,27 @@
+{
+  "module": "nodenext",
+  "name": "authserver",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/express-session": "^1.18.2",
+    "@types/passport": "^1.0.17",
+    "@types/passport-local": "^1.0.38"
+  },
+  "dependencies": {
+    "@types/passport-google-oauth20": "^2.0.16",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0"
+  }
+}

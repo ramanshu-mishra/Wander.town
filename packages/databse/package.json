@@ -1,0 +1,18 @@
+{
+  "name": "@repo/database",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@quixo3/prisma-session-store": "^3.1.13",
+    "prisma": "^6.14.0"
+  },
+  "main": "./generated/prisma/index.js",
+  "exports": {
+    "./prisma": "./generated/prisma/index.js"
+  }
+}
