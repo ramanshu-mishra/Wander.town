@@ -9,6 +9,7 @@ import { PrismaClient } from "@repo/database/prisma";
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import passport from "passport";
 import router from "./routes/route.js";
+import router2 from "./routes/gameRoutes.js";
 
 const app = express();
 app.use(express.json());
@@ -36,6 +37,7 @@ app.use(passport.session());
 
 
 app.use(router);
+app.use(router2);
 
 
 app.use((req, res, next) => {

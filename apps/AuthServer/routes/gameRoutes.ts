@@ -1,7 +1,8 @@
 import express from "express";
 const router = express.Router();
-import { isAuthenticated } from "../middlewares/middleware.js";
+import { isAuthenticated, checkHost } from "../middlewares/middleware.js";
 import { PrismaClient } from "@repo/database/prisma";
+import { check, date, nanoid } from "zod";
 const prisma = new PrismaClient();
 
 router.use(isAuthenticated);
@@ -42,6 +43,7 @@ router.get("/avatar-elements", async (req,res)=>{
 
 // @ts-ignore 
     const userId = req.user.id;
+    try{
     const [hair,color,beard,mustache,shirt,pant,eyes] = await prisma.$transaction([
         prisma.hair.findMany(),
         prisma.color.findMany(),
@@ -51,12 +53,20 @@ router.get("/avatar-elements", async (req,res)=>{
         prisma.pants.findMany(),
         prisma.eyes.findMany()
     ]);
-    res.status(200).json({hair,color,beard,mustache,shirt,pant,eyes})
+
+    res.status(200).json({hair,color,beard,mustache,shirt,pant,eyes});
+    return;
+}
+catch{
+    res.status(500).json({message: "Server Side Error"});
+    return;
+}
     
 });
 
 router.post("/createSpace", async (req,res)=>{
     const map_id = req.body.map_id;
+    const name = req.body.name;
     // @ts-ignore
     const userId= req.user.id;
    
@@ -70,100 +80,160 @@ router.post("/createSpace", async (req,res)=>{
         data: {
             map_id: newmp.id,
             host_id: userId,
+            name: name
         }
     });
     if(!newspace){res.status(500).json({message: "Server Side Error"}); return;}
 
     const uppdatedmp  = prisma.maps.update({
         where:{id:newmp.id},
-        data: {spaceId: newspace.id}
+        data: {spaceId: newspace.id},
+        select:{
+            thumbnail:true
+        }
     })
     if(!uppdatedmp){res.status(500).json({message: "Server Side Error"}); return;}
-    res.status(200).json({message: "new space created", spaceId: newspace.id});
+    res.status(200).json({message: "new space created", spaceId: newspace.id, name: newspace.name, thumbnail: (await uppdatedmp).thumbnail});
     return;
 })
 
-router.get("/space/:spaceId", (req,res)=>{
-    // get a space --get map details, 
+router.get("/space/:spaceId", async (req,res)=>{
+    const spaceId = req.params.spaceId;
+    const space = await prisma.spaces.findFirst({
+        where: {id: spaceId},
+        include:{
+            host:{include:{avatar: true},select: {id:true,username:true,avatarId:true, avatar: true}},
+            cohosts:{include:{avatar: true},select: {id:true,username:true,avatarId:true, avatar: true}},
+            members:{include:{avatar: true},select: {id:true,username:true,avatarId:true, avatar: true}},
+            map:{
+                include: {
+                    elements: {
+                        include:{
+                            element: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+    if(!space){
+        res.status(500).json({message: "invalid space"});
+        return;
+    }
+    // next step is to implement the isPublic and password logic in space schema
+    const ret = {
+        spaceId,
+        host: space.host,
+        cohosts: space.cohosts,
+        members :space.members,
+        map : space.map
+    }
+    res.status(200).json({spaceData: ret});
+    return;
 })
 
-router.get("/deleteSpace:spaceId", (req,res)=>{
+router.get("/deleteSpace:spaceId", async (req,res)=>{
     //  delete a space with particular spaceid
-
-
-    // need to return map and element data in below format
-// {
-//    "dimensions": "100x200",
-//    "elements": [{
-//  		   id: 1,
-// 		   element: {
-//   		   "id": "chair1",
-//   		   "imageUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRCRca3wAR4zjPPTzeIY9rSwbbqB6bB2hVkoTXN4eerXOIkJTG1GpZ9ZqSGYafQPToWy_JTcmV5RHXsAsWQC3tKnMlH_CsibsSZ5oJtbakq&usqp=CAE",
-//   		   "static": false,
-//   		   "height": 1,
-//   		   "width": 1
-// 		   }
-// 		   x: 20,
-// 		   y: 20
-// 	   }, {
-//  		   id: 2,
-// 	     element: {
-//   		   "id": "chair2",
-//   		   "imageUrl": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRCRca3wAR4zjPPTzeIY9rSwbbqB6bB2hVkoTXN4eerXOIkJTG1GpZ9ZqSGYafQPToWy_JTcmV5RHXsAsWQC3tKnMlH_CsibsSZ5oJtbakq&usqp=CAE",
-//   		   "static": false,
-//   		   "height": 1,
-//   		   "width": 1
-// 		   }
-// 		   x: 18,
-// 		   y: 20
-// 	   }, {
-//  		   id: 3,
-// 	     element: {
-//   		   "id": "table1",
-//   		   "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5El5F7QtBVHhSpkQMSzPSDoiQWl3Q7fRG3w&s",
-//   		   "static": true,
-//   		   "height": 1,
-//   		   "width": 1		   
-// 		   }
-// 		   x: 19,
-// 		   y: 20
-// 	   }
-//    ]
-// }
+    const spaceId = req.params.spaceId;
+    const delSpace = await prisma.$transaction([
+        prisma.maps.delete({where: {spaceId: spaceId} }),
+        prisma.spaces.delete({where: {id: spaceId}})
+    ])
+    
 })
 
 
-router.post('/avatar', (req,res)=>{
+router.post('/avatar', async (req,res)=>{
     //  create an avatar of choice and update current user avatar with that one and delete previous user avatar
+    // @ts-ignore
+    const userId = req.user.id;
+    const [hair,color,beard,mustache,shirt,pant,eyes] = [req.body.hair,req.body.color,req.body.beard,req.body.mustache,req.body.shirt,req.body.pant,req.body.eyes];
+    
+    const avatarName = hair.name+color.name+beard.name+mustache.name+shirt.name+pant.name+eyes.name;
+    const avatar = await prisma.avatar.findFirst({where:{name:avatarName}});
+    if(avatar){
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                avatarId : avatar.id
+            }
+        });
+    }
+    res.status(200).json({message: "avatar created succesfully"});
+
 })
 
 // in the webSocket connection server will get the user id he can fetch all his details through it from prismaClient, 
-
-router.post('/member:spaceId', (req,res)=>{
-    // check if the user is host or not
-    // if yes 
-    // promote a user to member
-})
-
-router.post("/cohost:spaceId", (req,res)=>{
-    // check if the user is host or not
-    // if yes
-    // promote the user to cohost
-})
-
-
-router.post("/addElement/:spaceId", (req,res)=>{
-    //  check if host or not;
+router.post("/addElement/:spaceId", checkHost , async (req,res)=>{
+     //  check if host or not;
     //  check map dimentions and corrdinates of where to ad elements
     // if all valid add the element
+    // @ts-ignore
+    const userId = req.user.id;
+    const spaceId = req.params.spaceId;
+    const x = req.body.positions.x;
+    const y = req.body.positions.y;
+    const elementId = req.body.elementId;
+
+    if(!x || !y || !elementId || spaceId){
+        res.status(404).json({message: "invalid request parameters"});
+        return;
+    }
+    try{
+    const mapid = await prisma.spaces.findFirst({
+        where: {
+            id: spaceId as string
+        },
+        select:{
+            map_id: true
+        }
+    })
+    if(!mapid){
+        res.status(404).json({message: "invalid Space"})
+        return;
+    }
+    const mp = await prisma.mapElements.create({
+        data:{
+            elementid: elementId as string,
+            x,
+            y,
+            mapid : mapid?.map_id as string
+        }
+    })
+}
+catch{
+    res.status(500).json({message: "something went wrong"});
+    return;
+}
+res.status(200).json({message: "Element added to Map"});
+return;
+   
 })
 
-router.post("/deleteElement/:spaceId", (req,res)=>{
+router.post("/deleteElement/:spaceId", checkHost , async(req,res)=>{
     // check if host or not;
     // if yes delete the element from space
+    const elementId = req.body.elementId;
+    const spaceId = req.params.spaceId;
+    try{
+    const del = await prisma.mapElements.delete({
+        where:{
+            id:elementId
+        }
+    });
+}
+catch{
+    res.status(500).json({message: "Server Side Error"});
+    return;
+}
+res.status(200).json({message: "element deleted succesfully"});
 })
 
 
+
+export default router;
 
 
 

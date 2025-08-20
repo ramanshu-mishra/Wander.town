@@ -90,11 +90,11 @@ router.get("/auth/google/callback", passport.authenticate("google"), async (req,
 
 router.get("/login-success", (req,res)=>{
     // @ts-ignore 
-    const username = req.user.username;
-    console.log(username);
+    const userId = req.user.id;
+    console.log(userId);
 
     // this token will be used for authentication in webSocket connection
-    const token = jwt.sign({username: username}, process.env.JWT_SECRET as string);
+    const token = jwt.sign({userId: userId}, process.env.JWT_SECRET as string);
 
     res.status(200).json({message: "user logged in succesfully", token: "Bearer "+token});
 })
