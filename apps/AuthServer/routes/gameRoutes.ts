@@ -3,6 +3,7 @@ const router = express.Router();
 import { isAuthenticated, checkHost } from "../middlewares/middleware.js";
 import { PrismaClient } from "@repo/database/prisma";
 import { check, date, nanoid } from "zod";
+import jwt from "jsonwebtoken";
 const prisma = new PrismaClient();
 
 router.use(isAuthenticated);
@@ -99,6 +100,8 @@ router.post("/createSpace", async (req,res)=>{
 
 router.get("/space/:spaceId", async (req,res)=>{
     const spaceId = req.params.spaceId;
+    // @ts-ignore
+    const userId = req.user.id;
     const space = await prisma.spaces.findFirst({
         where: {id: spaceId},
         include:{
@@ -128,7 +131,9 @@ router.get("/space/:spaceId", async (req,res)=>{
         members :space.members,
         map : space.map
     }
-    res.status(200).json({spaceData: ret});
+    // this token will be used to authorize on webSocket Server
+    const token = jwt.sign({userId: userId, spaceId: spaceId}, process.env.JWT_SECRET as string);
+    res.status(200).json({spaceData: ret, token: "Bearer "+token});
     return;
 })
 

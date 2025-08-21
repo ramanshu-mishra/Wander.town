@@ -93,10 +93,7 @@ router.get("/login-success", (req,res)=>{
     const userId = req.user.id;
     console.log(userId);
 
-    // this token will be used for authentication in webSocket connection
-    const token = jwt.sign({userId: userId}, process.env.JWT_SECRET as string);
-
-    res.status(200).json({message: "user logged in succesfully", token: "Bearer "+token});
+    res.status(200).json({message: "user logged in succesfully"});
 })
 
 router.get("/login-failure", (req,res)=>{
