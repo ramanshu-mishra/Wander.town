@@ -45,7 +45,7 @@ model Avatar{
   beardId String
   
   
-  user User[]
+  user User[] 
   hair Hair @relation(fields: [hairId], references: [id])
   beard Beard @relation(fields: [beardId], references: [id])
   eyes Eyes @relation(fields: [eyesId], references: [id])
@@ -53,14 +53,14 @@ model Avatar{
   pants Pants @relation(fields: [pantsId],references: [id])
   mustache Mustache @relation(fields: [mustacheId], references: [id])
 
-
 }
 
 model Spaces{
   id String @id @unique @default(cuid())
+  name String
   map_id String @unique
   host_id String
-  host User @relation("hostSpaces",fields: [host_id], references: [id])
+  host User @relation("hostSpaces",fields: [host_id], references: [id] , onUpdate: Cascade)
   map Maps? 
   cohosts   User[]  @relation("cohostSpaces")
   members   User[]  @relation("memberSpaces")
@@ -74,7 +74,7 @@ model Maps{
   image String
   thumbnail String
  spaceId String?  @unique   
-  space   Spaces?  @relation(fields: [spaceId], references: [id])
+  space   Spaces?  @relation(fields: [spaceId], references: [id], onDelete: Cascade)
 }
 
 model DefaultMaps{
@@ -90,7 +90,7 @@ model MapElements{
   x Int
   y Int
   elementid String
-  mapid String
+  mapid String 
   map Maps @relation(fields: [mapid], references: [id])
   element Elements @relation(fields: [elementid], references: [id])
 }

@@ -3,7 +3,11 @@ import jwt, { type JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { SpaceManager } from "./spaceManager.js";
 dotenv.config();
-const wss = new WebSocketServer();
+const wss = new WebSocketServer({
+    port: Number(process.env.GAME_SERVER_PORT) || 8080
+}, ()=>{
+    console.log("listening at port "+ wss.options.port);
+});
 
 
 // we need enums of message type;
@@ -23,11 +27,11 @@ const wss = new WebSocketServer();
 */ 
 
 wss.on("connection", (ws)=>{
-    console.log(ws);
+    
    ws.on("message", (data)=>{
     const d = JSON.parse(data.toString());
     const type = d.type;
-
+    
     if(type == "connect"){
             const token = d.payload.token;
             let verifiedToken: JwtPayload;

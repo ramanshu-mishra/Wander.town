@@ -11,4 +11,6 @@ const signupSchema = z.object({
     password: z.string().min(8).max(50),
     name: z.string().min(1).max(40)
 });
+
+
 export {loginSchema,signupSchema}
