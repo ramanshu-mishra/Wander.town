@@ -16,6 +16,7 @@ const spaces = await prisma.spaces.findMany({
         host_id: userId
     }
 })
+res.status(200).json({spaces});
 });
 
 router.get("/spaces/mySpaces", async(req,res)=>{
@@ -32,7 +33,7 @@ router.get("/spaces/mySpaces", async(req,res)=>{
     res.status(200).json({spaces})
 })
 
-router.get("maps", async (req,res)=>{
+router.get("/maps", async (req,res)=>{
     // @ts-ignore 
     const userId = req.user.id;
     const maps = await prisma.defaultMaps.findMany();
@@ -70,7 +71,11 @@ router.post("/createSpace", async (req,res)=>{
     const name = req.body.name;
     // @ts-ignore
     const userId= req.user.id;
-   
+    if(!name || !map_id || !userId){
+        res.status(404).json({
+            message: "INVALID_REQUEST_PARAMETERS"
+        })
+    }
     const mp = await prisma.defaultMaps.findUnique({where: {id:map_id}});
     if(!mp){res.status(500).json({message: "Server Side Error"}); return;}
     const newmp = await prisma.maps.create({data:{height:mp?.height, width:mp?.width, image: mp?.image, thumbnail: mp?.thumbnail}})
@@ -105,9 +110,9 @@ router.get("/space/:spaceId", async (req,res)=>{
     const space = await prisma.spaces.findFirst({
         where: {id: spaceId},
         include:{
-            host:{include:{avatar: true},select: {id:true,username:true,avatarId:true, avatar: true}},
-            cohosts:{include:{avatar: true},select: {id:true,username:true,avatarId:true, avatar: true}},
-            members:{include:{avatar: true},select: {id:true,username:true,avatarId:true, avatar: true}},
+            host:{select: {id:true,username:true,avatarId:true, avatar: true}},
+            cohosts:{select: {id:true,username:true,avatarId:true, avatar: true}},
+            members:{select: {id:true,username:true,avatarId:true, avatar: true}},
             map:{
                 include: {
                     elements: {

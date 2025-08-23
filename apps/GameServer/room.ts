@@ -50,6 +50,7 @@ export class Space{
     this.spaceManager = spaceManager
     this.userId = userId;
     this.ws = ws;    
+    console.log("baat yaha hai");
     this.init_Handlers();
     }
 
@@ -58,18 +59,31 @@ export class Space{
     }
 
     init_Handlers(){
+        console.log("baat yaha aa gayi");
          this.ws.on("message", (data)=>{
         const d = JSON.parse(data.toString());
         const type = d.type;
+
+        if(!type){
+            this.ws.send(JSON.stringify({type: "CONNECT_RESPONSE", verdict: false, error : "INVALID_REQUEST_PARAMETERS" }))
+            return;
+        }
         
          if(type == "move"){
-            const position = d.payload.position;
+            const position = d?.payload?.position;
+            if(!position || !position?.x || !position?.y){
+                this.ws.send(JSON.stringify({type: "CONNECT_RESPONSE", verdict: false, error : "INVALID_REQUEST_PARAMETERS" }))
+                return;
+            }
             const res = this.spaceManager.broadcast_movement(this.userId, this.spaceDetails.id, position);
+            console.log("got here to move");
             if(!res){
                 // reject movement;
+                console.log("movement rejected");
                 this.ws.send(JSON.stringify({type:"MOVE_RESPONSE", payload: {userId: this.userId , position, spaceId: this.spaceDetails.id} }));
                 return;
             }
+            
         }
         else if(type == "leave"){
             const users = this.spaceManager.getUsers(this.spaceDetails.id);

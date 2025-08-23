@@ -29,12 +29,36 @@ const wss = new WebSocketServer({
 wss.on("connection", (ws)=>{
     
    ws.on("message", (data)=>{
-    const d = JSON.parse(data.toString());
-    const type = d.type;
+    if(!data){
+        ws.send(JSON.stringify({type: "SERVER_RESPONSE", payload: {message: "Invalid data"}}))
+    }
+    let type:string;
+    let d : any;
+    try{
+     d = JSON.parse(data.toString());
+     type = d.type;
+     if(!type){
+         ws.send(JSON.stringify({type: "SERVER_RESPONSE", payload: {message: "Invalid payload"}}))
+        return;
+     }
+    }
+    catch{
+        ws.send(JSON.stringify({type: "SERVER_RESPONSE", payload: {message: "NON_JSON_FORMAT"}}))
+        return;
+    }
+    
     
     if(type == "connect"){
-            const token = d.payload.token;
+            const t = d?.payload?.token;
+            if(!t){
+                ws.send(JSON.stringify({type: "CONNECT_RESPONSE", verdict: false, error : "INVALID_REQUEST_PARAMETERS" }));
+                return;
+            }
+            const token = d.payload.token.split(" ")[1];
             let verifiedToken: JwtPayload;
+            if(!token){
+                ws.send(JSON.stringify({type: "CONNECT_RESPONSE", verdict: false, error : "INVALID_REQUEST_PARAMETERS" }));
+            }
             try{
             verifiedToken = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
             }
@@ -44,8 +68,10 @@ wss.on("connection", (ws)=>{
                 return;
             }
             const userId = verifiedToken.userId;
+            console.log("userId: "+userId);
             const spaceId = verifiedToken.spaceId;
-            const spaceManager = new SpaceManager(spaceId,userId,ws);
+            const spaceManager = SpaceManager.getInstance();
+            spaceManager.initSpace(spaceId,userId,ws);
             ws.send(JSON.stringify({type: "CONNECT_RESPONSE", verdict: true, message: "USER CONNECTED"}));
             return;
         }
