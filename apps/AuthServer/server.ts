@@ -13,7 +13,10 @@ import router2 from "./routes/gameRoutes.js";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:3001", "https://localhost:3001"],
+  credentials: true,    
+}));
 
 
 app.use(expressSession({
@@ -24,13 +27,15 @@ app.use(expressSession({
     checkPeriod: 2 * 60 * 1000,
     dbRecordIdIsSessionId: true,
     dbRecordIdFunction: undefined,
-  } as any),  
+  } as any),
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: false,
-    sameSite: "lax"
+    httpOnly: true,  
+    sameSite: "lax", 
   }
 }));
+
+
 
 app.use(passport.initialize());
 app.use(passport.session());

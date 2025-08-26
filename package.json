@@ -23,7 +23,10 @@
     "packages/*"
   ],
   "dependencies": {
-    "prisma": "^6.14.0"
+    "@repo/interface": "^1.0.0",
+    "axios": "^1.11.0",
+    "prisma": "^6.14.0",
+    "zustand": "^5.0.8"
   },
   "version": "1.0.0",
   "description": "This Turborepo starter is maintained by the Turborepo core team.",

@@ -57,6 +57,7 @@ router.get("/auth/google", passport.authenticate("google", {scope: ['profile']})
 router.get("/auth/google/callback", passport.authenticate("google"), async (req,res)=>{
     // @ts-ignore
     const userId:string|undefined = req.user?.id;
+    console.log(req.user);
     console.log("user id is: "+userId);
     try{
         const usr = await prisma.user.findUnique({
@@ -83,7 +84,18 @@ router.get("/auth/google/callback", passport.authenticate("google"), async (req,
         res.status(500).json({message: msg});
         return;
     }
-    res.redirect("/login-success");
+    // res.redirect("/login-success");
+    console.log("Sending postMessage back to opener");
+
+    res.send(`
+        <script>
+      // Send token back to the opener (main window)
+      console.log("got a message");
+      window.opener.postMessage({ verdict: true }, "http://localhost:3001");
+      window.close();
+    </script>
+    `
+    )
     return;
 
 })

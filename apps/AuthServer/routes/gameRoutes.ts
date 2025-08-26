@@ -2,13 +2,13 @@ import express from "express";
 const router = express.Router();
 import { isAuthenticated, checkHost } from "../middlewares/middleware.js";
 import { PrismaClient } from "@repo/database/prisma";
-import { check, date, nanoid } from "zod";
 import jwt from "jsonwebtoken";
 const prisma = new PrismaClient();
 
 router.use(isAuthenticated);
 
 router.get("/spaces/all", async(req,res)=>{
+    console.log("got a request");
     // @ts-ignore
 const userId = req.user.id;
 const spaces = await prisma.spaces.findMany({
@@ -130,6 +130,7 @@ router.get("/space/:spaceId", async (req,res)=>{
     }
     // next step is to implement the isPublic and password logic in space schema
     const ret = {
+        userId,
         spaceId,
         host: space.host,
         cohosts: space.cohosts,

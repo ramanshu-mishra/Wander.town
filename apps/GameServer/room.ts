@@ -72,7 +72,7 @@ export class Space{
          if(type == "move"){
             const position = d?.payload?.position;
             if(!position || !position?.x || !position?.y){
-                this.ws.send(JSON.stringify({type: "CONNECT_RESPONSE", verdict: false, error : "INVALID_REQUEST_PARAMETERS" }))
+                this.ws.send(JSON.stringify({type: "MOVE_RESPONSE", verdict: false, error : "INVALID_REQUEST_PARAMETERS" }))
                 return;
             }
             const res = this.spaceManager.broadcast_movement(this.userId, this.spaceDetails.id, position);
