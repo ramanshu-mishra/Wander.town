@@ -23,6 +23,7 @@ export function useIsAuthenticated(){
         }
     }
     catch(e){
+        console.log("Error: "+e);
         setError(e as Error);
     }
     finally{

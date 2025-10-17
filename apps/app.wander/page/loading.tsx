@@ -1,25 +1,46 @@
-"use client"
-import Image from "next/image"
-import googleLogo from "@/public/assets/google.png"
-import Button from '@repo/ui/Button'
-export default function Login(){
+"use client";
+import {motion} from "motion/react";
+
+export default function Loading(){
     return (
-        <div className=" flex flex-col items-center justify-center min-h-screen gap-4">
-          
-            <div className="text-[4rem] font-normal tracking-widest select-none">WANDER </div>
-            <div>
-                <div className="font-poppins font-bold text-neutral-700">LogIn to your Wander account</div>
-                <div className="flex flex-col gap-4  justify-center items-center">
-                         <Button className="flex items-center tracking-wide bg-neutral-50 "><Image src={googleLogo} alt="googleLogo" width={25}></Image> Continue with Google</Button>
-                         <div>or</div>
-                         <div className="flex flex-col">
-                            <input type="text" placeholder="Enter your UserName"></input>
-                            <input type="text" placeholder="Enter your password"></input>
-                            <div>LogIn with Username</div>
-                         </div>
-                </div>
-               
-            </div>
+        <div className="h-screen w-screen flex justify-center items-center bg-black">
+            <style>{`
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-20px); }
+                }
+                
+                @keyframes shimmer {
+                    0%, 100% { 
+                        background-position: 200% center;
+                        text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+                    }
+                    50% { 
+                        background-position: -200% center;
+                        text-shadow: 0 0 40px rgba(255, 255, 255, 0.8);
+                    }
+                }
+                
+                .shiny-text {
+                    font-size: 4rem;
+                    font-weight: 700;
+                    letter-spacing: 0.1em;
+                    background: linear-gradient(90deg, #fff 0%, #fff 25%, #aaa 50%, #fff 75%, #fff 100%);
+                    background-size: 200% center;
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    animation: shimmer 3s ease-in-out infinite, float 3s ease-in-out infinite;
+                }
+            `}</style>
+            <motion.div 
+                className="shiny-text"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+            >
+                WANDER
+            </motion.div>
         </div>
     )
 }

@@ -83,16 +83,23 @@ router.get("/auth/google/callback", passport.authenticate("google"), async (req,
         res.status(500).json({message: msg});
         return;
     }
-    res.redirect("/login-success");
+    // res.redirect("/login-success");
+    console.log("Sending postMessage back to opener");
+
+    res.send(`
+        <script>
+      // Send token back to the opener (main window)
+      console.log("got a message");
+      window.opener.postMessage({ verdict: true }, "http://localhost:3003");
+      window.close();
+    </script>
+    `
+    )
     return;
 
 })
 
 router.get("/login-success", (req,res)=>{
-    // @ts-ignore 
-    const userId = req.user.id;
-    console.log(userId);
-
     res.status(200).json({message: "user logged in succesfully"});
 })
 
