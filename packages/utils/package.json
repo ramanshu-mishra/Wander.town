@@ -4,13 +4,15 @@
   "main": "index.js",
   "type":"module",
   "scripts": {
-    "test": "tsc"
+    "test": "tsc",
+    "build" : "tsc"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "exports": {
-    "./zodTypes": "./dist/zodTypes.js"
+    "./zodTypes": "./dist/zodTypes.js",
+    "./cn" : "./dist/cn.js"
   },
   "dependencies": {
     "zod": "^4.0.17"

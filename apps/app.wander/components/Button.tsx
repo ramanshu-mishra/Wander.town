@@ -1,4 +1,4 @@
-import {cn} from "./cn"
+import {cn} from "@repo/utils/cn"
 
 interface ButtonInterface {
 className ?:string,
