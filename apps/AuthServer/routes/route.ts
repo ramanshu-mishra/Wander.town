@@ -198,7 +198,7 @@ router.get("/userExists", async(req,res)=>{
             verdict : false,
             message: "user does not exists"
         })
-    }s
+    }
     return;
 }
 catch(e){
