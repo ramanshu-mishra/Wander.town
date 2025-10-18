@@ -17,7 +17,7 @@ const verifyCallBack = async (username: string, password: string, done: (error: 
     try {
         const user = await prisma.user.findUnique({
             where: {
-                username: username
+                username: username.toLowerCase()
             }
         });
 
@@ -72,8 +72,8 @@ passport.use(new googleStrategy({
             usr = await prisma.user.create({
             data: {
                 id: profile.id,
-                username: profile.name.givenName.split(" ")[0]+profile.name.familyName.split(" ")[0]+ Math.random()*10,
-                name: profile.name.givenName ,
+                username: profile.name.givenName.split(" ")[0].toLowerCase()+profile.name.familyName.split(" ")[0].toLowerCase()+ Math.random()*10,
+                name: profile.name.givenName.toLowerCase() ,
             }
         })
         break;

@@ -124,7 +124,7 @@ router.post("/signUp", async (req,res)=>{
     
     const user = await prisma.user.findUnique({
         where:{
-            username:s.data.username
+            username:s.data.username.toLowerCase()
         }
     });
     if(user){
@@ -138,14 +138,15 @@ router.post("/signUp", async (req,res)=>{
     const hashedpass = await  bcrypt.hash(s.data.password, 10);
     const regUser = await prisma.user.create({
         data: {
-            username: s.data.username,
+            username: s.data.username.toLowerCase(),
             password: hashedpass,
-            name: name
+            name: name.toLowerCase()
         }
     });
 
     
-    res.status(200).json({message: "user registered succesfully"})
+    res.status(200).json({message: "user registered succesfully"});
+    // res.redirect("/login");
     return;
     }
     catch(e){
@@ -168,6 +169,46 @@ router.get("/unAuthorized-session", (req,res)=>{
 router.get("/isAuthenticated", isAuthenticated, (req,res)=>{
     res.status(200).json({message: "user Authenticated"});
 })
+
+
+router.get("/userExists", async(req,res)=>{
+    // if(req.originalUrl != "http://localhost:3003"){
+    //     res.redirect("/unAuthorized-session");
+    //     return;
+    // }
+    if(!req.headers.username){
+        res.status(400).json({
+            message: "Invalid Credentials"
+        })
+    }
+    try{
+    const user = await prisma.user.findFirst({
+        where: {
+            username: (req.headers.username as string).toLowerCase()
+        }
+    })
+    if(user){
+        res.status(200).json({
+            verdict : true,
+            message: "user Exists"
+        });
+    }
+    else{
+        res.status(200).json({
+            verdict : false,
+            message: "user does not exists"
+        })
+    }s
+    return;
+}
+catch(e){
+    const message = e instanceof Error ? e.message : "Server Side Error"; 
+    res.status(500).json({
+        message
+    });
+}
+
+});
 
 
 export default router;
