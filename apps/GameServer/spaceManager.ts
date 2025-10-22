@@ -47,7 +47,7 @@ export class SpaceManager{
       old?.ws.close();
     }
         try{
-        const spaceDetails = await prisma.spaces.findFirst({ where: { id: spaceId }, include: {
+        const spaceDetails = await prisma.space.findFirst({ where: { id: spaceId }, include: {
             host:{
                 select:{
                     id:true,
@@ -83,7 +83,7 @@ export class SpaceManager{
                              id: true,
                             x:true,
                             y:true,
-                            elementid:true
+                            elementId: true
                         }
                     },
                     id:true,

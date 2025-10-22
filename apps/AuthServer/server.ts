@@ -9,7 +9,7 @@ import { PrismaClient } from "@repo/database/prisma";
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import passport from "passport";
 import router from "./routes/route.js";
-import router2 from "./routes/gameRoutes.js";
+import router2 from "./routes/gameRoutes2.js";
 
 const app = express();
 app.use(express.json());

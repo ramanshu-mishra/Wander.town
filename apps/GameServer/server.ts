@@ -2,6 +2,8 @@ import {WebSocketServer} from "ws"
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { SpaceManager } from "./spaceManager.js";
+import { MessageType, RequestType, ErrorType,ResponseType } from "./messageTypes.js";
+
 dotenv.config();
 const wss = new WebSocketServer({
     port: Number(process.env.GAME_SERVER_PORT) || 8080
@@ -30,7 +32,7 @@ wss.on("connection", (ws)=>{
     
    ws.on("message", (data)=>{
     if(!data){
-        ws.send(JSON.stringify({type: "SERVER_RESPONSE", payload: {message: "Invalid data"}}))
+        ws.send(JSON.stringify({type: ResponseType.SERVER_RESPONSE, payload: {message: ErrorType.INVALID_PAYLOAD}}))
     }
     let type:string;
     let d : any;
@@ -38,32 +40,32 @@ wss.on("connection", (ws)=>{
      d = JSON.parse(data.toString());
      type = d.type;
      if(!type){
-         ws.send(JSON.stringify({type: "SERVER_RESPONSE", payload: {message: "Invalid payload"}}))
+         ws.send(JSON.stringify({type: ResponseType.SERVER_RESPONSE, payload: {message: ErrorType.INVALID_PAYLOAD}}))
         return;
      }
     }
     catch{
-        ws.send(JSON.stringify({type: "SERVER_RESPONSE", payload: {message: "NON_JSON_FORMAT"}}))
+        ws.send(JSON.stringify({type: ResponseType.SERVER_RESPONSE, payload: {message: ErrorType.NON_JSON_FORMAT}}))
         return;
     }
     
     
-    if(type == "connect"){
-            const t = d?.payload?.token;
+    if(type == RequestType.CONNECT){
+            const t = d.payload?.token;
             if(!t){
-                ws.send(JSON.stringify({type: "CONNECT_RESPONSE", verdict: false, error : "INVALID_REQUEST_PARAMETERS" }));
+                ws.send(JSON.stringify({type: ResponseType.CONNECT_RESPONSE, verdict: false, error : ErrorType.INVALID_REQUEST_PARAMETERS }));
                 return;
             }
             const token = d.payload.token.split(" ")[1];
             let verifiedToken: JwtPayload;
             if(!token){
-                ws.send(JSON.stringify({type: "CONNECT_RESPONSE", verdict: false, error : "INVALID_REQUEST_PARAMETERS" }));
+                ws.send(JSON.stringify({type: ResponseType.CONNECT_RESPONSE, verdict: false, error : ErrorType.INVALID_REQUEST_PARAMETERS }));
             }
             try{
             verifiedToken = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
             }
             catch{
-                ws.send(JSON.stringify({type: "CONNECT_RESPONSE", verdict: false, error : "UNAUTHORIZED_REQUEST" }));
+                ws.send(JSON.stringify({type: ResponseType.CONNECT_RESPONSE, verdict: false, error : ErrorType.UNAUTHORIZED_REQUEST }));
                 ws.close();
                 return;
             }
@@ -72,7 +74,7 @@ wss.on("connection", (ws)=>{
             const spaceId = verifiedToken.spaceId;
             const spaceManager = SpaceManager.getInstance();
             spaceManager.initSpace(spaceId,userId,ws);
-            ws.send(JSON.stringify({type: "CONNECT_RESPONSE", verdict: true, message: "USER CONNECTED"}));
+            ws.send(JSON.stringify({type: ResponseType.CONNECT_RESPONSE, verdict: true, message: MessageType.USER_CONNECTED}));
             return;
         }
    })

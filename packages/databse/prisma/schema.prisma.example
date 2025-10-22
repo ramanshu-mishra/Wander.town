@@ -1,0 +1,118 @@
+// generator client {
+//   provider = "prisma-client-js"
+//   output   = "../generated/prisma"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+
+
+// model Session {
+//   id        String   @id @default(cuid())
+//   sid       String   @unique
+//   data      String
+//   expiresAt   DateTime
+// }
+
+
+// model User {
+//   id  String @id @unique @default(cuid())
+//   username String @unique 
+//   password String? 
+//   name String
+//   hostOrganisations Organisations[] 
+//   host_spaces Spaces[] @relation("hostSpaces")
+//   cohost_spaces Spaces[] @relation("cohostSpaces")
+//   member_spaces Spaces[] @relation("memberSpaces")
+//   avatarId String?
+//   avatar Avatar? @relation(fields: [avatarId], references: [id])
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt @default(now())
+//   activeSession String?
+// }
+
+// model Avatar{
+//   id String @id @unique @default(cuid())
+//   name String @default("default")
+//   image String 
+//   user User[] 
+// }
+
+// model Spaces{
+//   id String @id @unique @default(cuid())
+//   name String
+//   map_id String @unique
+//   host_id String
+//   host User @relation("hostSpaces",fields: [host_id], references: [id] , onUpdate: Cascade)
+//   map Maps @relation(fields: [map_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+//   cohosts   User[]  @relation("cohostSpaces")
+//   members   User[]  @relation("memberSpaces")
+//   orgId String?
+//   org Organisations? @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+// }
+
+
+
+// model Organisations{
+//  id String @id @unique @default(cuid())
+//  name String
+//  hostId String
+//  host User @relation(fields: [hostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//  spaces Spaces[]
+// }
+
+// model Maps{
+//   id String @id @unique @default(cuid())
+//   height Int
+//   width Int
+//   elements MapElements[]
+//   image String
+//   thumbnail String
+//   spaceId String?  @unique   
+//   space   Spaces?
+// }
+
+
+// model DefaultMaps{
+//   id String @id @unique @default(cuid())
+//   height Int
+//   width Int
+//   image String
+//   thumbnail String
+// }
+
+// model MapElements{
+//   id String @id @unique @default(cuid())
+//   x Int
+//   y Int
+//   elementid String
+//   mapid String 
+//   map Maps @relation(fields: [mapid], references: [id])
+//   element Elements @relation(fields: [elementid], references: [id])
+// }
+
+// model Elements{
+//  id String @id @unique @default(cuid())
+//  name String
+//  height Int
+//  width Int
+//  image String
+//  mapElements MapElements[]
+// }
+
+// model Color{
+//   id String @id @unique @default(cuid())
+//   name String
+// }
+
+
+
+
+
+
+
+// // I will create a seperate dev server for adding elements in map
+// // I am currently not allowing users to add elements to map and add avatar images
