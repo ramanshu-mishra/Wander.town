@@ -1,15 +1,21 @@
 export enum RequestType{
     CONNECT = "CONNECT",
+    MOVE = "MOVE",
+    EXIT = "EXIT"
     
 }
 
 export enum MessageType{
-    USER_CONNECTED = "USER_CONNECTED"
+    USER_CONNECTED = "USER_CONNECTED",
+    FORCE_LOGOUT = "FORCE_LOGOUT"
 }
 
 export enum ResponseType{
     SERVER_RESPONSE = "SERVER_RESPONSE",
-    CONNECT_RESPONSE = "CONNECT_RESPONSE"
+    CONNECT_RESPONSE = "CONNECT_RESPONSE",
+    MOVE_RESPONSE = "MOVE_RESPONSE",
+    POSITION = "POSITION",
+    USER_EXIT = "USER_EXIT"
 }
 
 export enum ErrorType{

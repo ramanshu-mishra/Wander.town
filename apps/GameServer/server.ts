@@ -1,8 +1,12 @@
 import {WebSocketServer} from "ws"
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
-import { SpaceManager } from "./spaceManager.js";
+import { SpaceManager } from "./spaceManager2.js";
 import { MessageType, RequestType, ErrorType,ResponseType } from "./messageTypes.js";
+import { PrismaClient } from "@repo/database/prisma";
+import { WebSocket } from "ws";
+
+const prisma = new PrismaClient();
 
 dotenv.config();
 const wss = new WebSocketServer({
@@ -30,7 +34,7 @@ const wss = new WebSocketServer({
 
 wss.on("connection", (ws)=>{
     
-   ws.on("message", (data)=>{
+   ws.on("message", async(data)=>{
     if(!data){
         ws.send(JSON.stringify({type: ResponseType.SERVER_RESPONSE, payload: {message: ErrorType.INVALID_PAYLOAD}}))
     }
@@ -52,30 +56,54 @@ wss.on("connection", (ws)=>{
     
     if(type == RequestType.CONNECT){
             const t = d.payload?.token;
+            try{
             if(!t){
-                ws.send(JSON.stringify({type: ResponseType.CONNECT_RESPONSE, verdict: false, error : ErrorType.INVALID_REQUEST_PARAMETERS }));
-                return;
+               throw new Error(ErrorType.INVALID_REQUEST_PARAMETERS);
             }
             const token = d.payload.token.split(" ")[1];
             let verifiedToken: JwtPayload;
             if(!token){
-                ws.send(JSON.stringify({type: ResponseType.CONNECT_RESPONSE, verdict: false, error : ErrorType.INVALID_REQUEST_PARAMETERS }));
+                throw new Error(ErrorType.INVALID_REQUEST_PARAMETERS);
             }
             try{
             verifiedToken = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
             }
             catch{
-                ws.send(JSON.stringify({type: ResponseType.CONNECT_RESPONSE, verdict: false, error : ErrorType.UNAUTHORIZED_REQUEST }));
-                ws.close();
-                return;
+                throw new Error(ErrorType.UNAUTHORIZED_REQUEST);
             }
+
             const userId = verifiedToken.userId;
             console.log("userId: "+userId);
             const spaceId = verifiedToken.spaceId;
             const spaceManager = SpaceManager.getInstance();
-            spaceManager.initSpace(spaceId,userId,ws);
-            ws.send(JSON.stringify({type: ResponseType.CONNECT_RESPONSE, verdict: true, message: MessageType.USER_CONNECTED}));
+
+            const space = await spaceManager.joinSpace(userId, spaceId, ws,wss);
+            
+            ws.send(JSON.stringify({type: ResponseType.CONNECT_RESPONSE, success: true, message: MessageType.USER_CONNECTED,
+            space
+            }));
             return;
+        }
+        catch(e){
+            const message = e instanceof Error ? e.message : "Server Side Error"
+            ws.send(JSON.stringify({type: ResponseType.CONNECT_RESPONSE,
+                 success: false,
+                error: message}))
+        }
         }
    })
 })
+
+
+function sendInvalidPayloadMessage(ws:WebSocket){
+    ws.send(JSON.stringify({
+        type: ResponseType.SERVER_RESPONSE,
+        success:false,
+        payload: {message: ErrorType.INVALID_PAYLOAD}
+    }));
+}
+
+
+
+
+
