@@ -527,6 +527,19 @@ catch(e){
 })
 
 
+
+router.get("/userDetails", (req,res)=>{
+    // @ts-ignore
+    const userId = req.user.id;
+
+    const userDetails = await prisma.user.findFirst({
+        where: {
+            id: userId
+        }
+    })
+})
+
+
 export default router;
 
 

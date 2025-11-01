@@ -9,7 +9,8 @@ import {loginSchema, signupSchema} from "@repo/utils/zodTypes";
 import {PrismaClient} from "@repo/database/prisma";
 const prisma = new PrismaClient();
 import { isAuthenticated } from "../middlewares/middleware.js";
-import jwt from "jsonwebtoken";
+
+
 
 
 
@@ -100,6 +101,9 @@ router.get("/auth/google/callback", passport.authenticate("google"), async (req,
 })
 
 router.get("/login-success", (req,res)=>{
+    const userId = req.user;
+    console.log("here is the user details >>>>>>>>>>>>>>>>>>>>>>>>>>");
+    console.log(userId);
     res.status(200).json({message: "user logged in succesfully"});
 })
 

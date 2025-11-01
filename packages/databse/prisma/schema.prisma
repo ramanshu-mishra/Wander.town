@@ -32,7 +32,7 @@ model User {
     activeSession String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt @default(now())
-
+    image String?
 
     spaces UserSpace[]
     hostSpaces Space[] 

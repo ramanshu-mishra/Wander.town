@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+@theme {
+  /* Color palette using HSL */
+  --color-background: hsl(210 40% 98%);
+  --color-foreground: hsl(215 25% 15%);
+  
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(215 25% 15%);
+  
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(215 25% 15%);
+  
+  --color-primary: hsl(199 89% 48%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-primary-glow: hsl(186 77% 64%);
+  
+  --color-secondary: hsl(186 100% 94%);
+  --color-secondary-foreground: hsl(199 89% 30%);
+  
+  --color-muted: hsl(210 40% 96%);
+  --color-muted-foreground: hsl(215 16% 47%);
+  
+  --color-accent: hsl(186 77% 64%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  
+  --color-border: hsl(214 32% 91%);
+  --color-input: hsl(214 32% 91%);
+  --color-ring: hsl(199 89% 48%);
+  
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  
+  /* Custom animations */
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  
+  /* Sidebar colors */
+  --color-sidebar-background: hsl(0 0% 98%);
+  --color-sidebar-foreground: hsl(240 5.3% 26.1%);
+  --color-sidebar-primary: hsl(240 5.9% 10%);
+  --color-sidebar-primary-foreground: hsl(0 0% 98%);
+  --color-sidebar-accent: hsl(240 4.8% 95.9%);
+  --color-sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --color-sidebar-border: hsl(220 13% 91%);
+  --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background: hsl(215 28% 12%);
+    --color-foreground: hsl(210 40% 98%);
+    
+    --color-card: hsl(215 25% 16%);
+    --color-card-foreground: hsl(210 40% 98%);
+    
+    --color-popover: hsl(215 25% 16%);
+    --color-popover-foreground: hsl(210 40% 98%);
+    
+    --color-primary: hsl(199 89% 48%);
+    --color-primary-foreground: hsl(0 0% 100%);
+    
+    --color-secondary: hsl(215 25% 20%);
+    --color-secondary-foreground: hsl(210 40% 98%);
+    
+    --color-muted: hsl(215 25% 20%);
+    --color-muted-foreground: hsl(215 20% 65%);
+    
+    --color-accent: hsl(186 77% 64%);
+    --color-accent-foreground: hsl(0 0% 100%);
+    
+    --color-destructive: hsl(0 63% 31%);
+    --color-destructive-foreground: hsl(210 40% 98%);
+    
+    --color-border: hsl(215 25% 20%);
+    --color-input: hsl(215 25% 20%);
+    --color-ring: hsl(199 89% 48%);
+    
+    --color-sidebar-background: hsl(240 5.9% 10%);
+    --color-sidebar-foreground: hsl(240 4.8% 95.9%);
+    --color-sidebar-primary: hsl(224.3 76.3% 48%);
+    --color-sidebar-primary-foreground: hsl(0 0% 100%);
+    --color-sidebar-accent: hsl(240 3.7% 15.9%);
+    --color-sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+    --color-sidebar-border: hsl(240 3.7% 15.9%);
+    --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
+  }
+}
+
+/* Keyframe animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom utility classes */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, hsl(199 89% 48%), hsl(186 77% 64%));
+}
+
+.bg-gradient-hero {
+  background: linear-gradient(180deg, hsl(199 89% 96%), hsl(186 100% 94%));
+}
+
+@media (prefers-color-scheme: dark) {
+  .bg-gradient-hero {
+    background: linear-gradient(180deg, hsl(220, 7%, 91%), hsl(216, 73%, 77%));
+  }
+}
+
+.shadow-card {
+  box-shadow: 0 2px 8px -2px hsl(199 89% 48% / 0.1);
+}
+
+.shadow-elevated {
+  box-shadow: 0 8px 24px -4px hsl(199 89% 48% / 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  .shadow-card {
+    box-shadow: 0 2px 8px -2px hsl(0 0% 0% / 0.3);
+  }
+  
+  .shadow-elevated {
+    box-shadow: 0 8px 24px -4px hsl(0 0% 0% / 0.4);
+  }
+}
+
+.shadow-glow {
+  box-shadow: 0 0 20px hsl(199 89% 48% / 0.3);
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+/* Apply styles to body */
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+}
