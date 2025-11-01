@@ -1,8 +1,9 @@
 "use client";
-
-import { useState } from "react";
+import Loading from "@/page/loading";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import Cookie from "js-cookie"
 import { Plus, Building2, Crown, History } from "lucide-react";
 import {
   RecentlyVisited,
@@ -11,14 +12,31 @@ import {
   CreateOrganisation,
 } from "./components";
 import Navbar from "./components/navbar";
+import useGetUserDetails from "@/hooks/useGetUserDetails";
+import { useUserDetails } from "@/store";
 
 type ViewType = "recent" | "organisations" | "my-spaces" | "create-org";
 
 const Dashboard = () => {
 
+  const {loading,error,data} = useGetUserDetails();
+  const {setUserDetails} = useUserDetails();
   
 
+  useEffect(()=>{
+    if(data){
+      console.log(data);
+      setUserDetails(data);
+    }
+  }, [data]);
+
   const router = useRouter();
+  useEffect(()=>{
+    if(error){
+      Cookie.remove("connect.sid");
+      router.push("/login");
+    }
+  },[error]);
   const [activeView, setActiveView] = useState<ViewType>("recent");
 
   // Mock data for spaces
@@ -26,6 +44,12 @@ const Dashboard = () => {
     { id: 1, name: "Team Workspace", map: "Office", members: 12, lastActive: "2 hours ago", image: "/assets/map-office.jpg", isOwner: false },
     { id: 2, name: "Friday Social", map: "Cafe", members: 8, lastActive: "1 day ago", image: "/assets/map-cafe.jpg", isOwner: true },
   ];
+
+  const recentSpaces2 = data?.hostSpaces.map((space)=>({
+    id: space.id,
+    name:space.name,
+    map: space.
+  }))
 
   const mySpaces = [
     { id: 2, name: "Friday Social", map: "Cafe", members: 8, lastActive: "1 day ago", image: null, organisationId: null },
@@ -73,6 +97,9 @@ const Dashboard = () => {
   };
 
   return (
+    <>
+    {loading && <Loading></Loading>}
+    {!loading  && data && 
     <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
@@ -121,6 +148,9 @@ const Dashboard = () => {
         {renderContent()}
       </div>
     </div>
+    }  
+    </>
+    
   );
 };
 

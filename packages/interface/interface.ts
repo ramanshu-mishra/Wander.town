@@ -8,10 +8,10 @@ export interface userInterface{
         spaceId: string,
         avatarId:string
     }[],
-    hostSpaces: spaceInterface,
-    cohostSpaces:spaceInterface,
-    memberSpaces:spaceInterface,
-    organisations: orgInterface
+    hostSpaces: spaceInterface[],
+    cohostSpaces:spaceInterface[],
+    memberSpaces:spaceInterface[],
+    organisations: orgInterface[]
 }
 
 
@@ -20,6 +20,7 @@ interface spaceInterface{
     name:string,
     orgId?:string,
     organisation ?:{
+        id:true,
         name:string
     }
 }
@@ -31,5 +32,5 @@ interface orgInterface{
     spaces: spaceInterface,
     parentOrgId ?: string,
     childorgs: orgInterface[],
-    hostId:string
+    hostId: string
 }

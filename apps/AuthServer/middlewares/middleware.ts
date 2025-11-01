@@ -8,6 +8,7 @@ export function isAuthenticated(req: Request, res: Response, next: NextFunction)
         console.log(req.user);
         return next();
     }
+    console.log(">>>>>>>>>>>>>>>>> unauthenticated Request <<<<<<<<<<<<<<<<<<<<<<<<<<")
     res.redirect("/unAuthorized-session");
 }
 

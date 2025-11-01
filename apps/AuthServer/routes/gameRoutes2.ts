@@ -528,15 +528,102 @@ catch(e){
 
 
 
-router.get("/userDetails", (req,res)=>{
+router.get("/userDetails", async(req,res)=>{
     // @ts-ignore
     const userId = req.user.id;
 
+    try{
     const userDetails = await prisma.user.findFirst({
         where: {
             id: userId
+        },
+        select:{
+            id:true,
+            name:true,
+            username:true,
+            email:true,
+            image:true,
+            spaces:{
+                select:{
+                    spaceId:true,
+                    avatarId:true
+                }
+            },
+            hostSpaces:{
+                select:{
+                    id:true,
+                    name:true,
+                    orgId:true,
+                    organisation:{
+                        select:{
+                            id:true,
+                            name:true
+                        }
+                    }
+                }
+            },
+            cohostSpaces:{
+                select:{
+                    id:true,
+                    name:true,
+                    orgId:true,
+                    organisation:{
+                        select:{
+                            id:true,
+                            name:true
+                        }
+                    }
+                }
+            },
+            memberSpaces:{
+                select:{
+                    id:true,
+                    name:true,
+                    orgId:true,
+                    organisation:{
+                        select:{
+                            id:true,
+                            name:true
+                        }
+                    }
+                }
+            },
+            organisations:{
+                select:{
+                    id:true,
+                    name:true,
+                    spaces:{
+                select:{
+                    id:true,
+                    name:true,
+                    orgId:true,
+                    organisation:{
+                        select:{
+                            id:true,
+                            name:true
+                        }
+                    }
+                }
+                    },
+                    parentOrgId:true,
+                    childOrg: true,
+                    hostId : true
+                }
+            }
         }
     })
+
+    res.status(200).json({
+        ...userDetails
+    });
+}
+catch(e){
+     const message = e instanceof Error ? e.message : "Server Side Error"
+    res.status(500).json({
+        message
+    });
+    return;
+}
 })
 
 

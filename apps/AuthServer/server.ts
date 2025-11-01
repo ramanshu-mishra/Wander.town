@@ -13,7 +13,10 @@ import router2 from "./routes/gameRoutes2.js";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3003",
+  credentials: true
+}));
 
 
 app.use(expressSession({

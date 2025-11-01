@@ -1,5 +1,5 @@
 import {create} from "zustand"
-import { userInterface } from "./interface"
+import { userInterface } from "@repo/interface"
 
 
 interface userDetailsInterface{
