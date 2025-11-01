@@ -1,20 +1,24 @@
+"use client"
 import Button from "@/components/Button";
-import { useGetUsername } from "@/hooks/useGetUsername";
-import { useEffect } from "react";
+import { useUserDetails } from "@/store";
+
+import { useRouter } from "next/navigation";
 
 
 export default function Navbar(){
-    const username = useGetUsername();
-    useEffect(()=>{
-        console.log(username);
-    },[username])
+    const router = useRouter();
+    const {userDetails} = useUserDetails();
+
     return (
-        <div className="flex justify-between">
-            <div className="text-[4rem] text-neutral-950 font-normal tracking-widest select-none">WANDER </div>
-            <div>
-                <Button  variant="nav" className="flex items-center gap-2 tracking-wide"> <Plus></Plus> Create Space</Button>
+        <div className="flex justify-between  items-center">
+            <div className="text-[2rem]  text-neutral-950 font-normal tracking-widest select-none">WANDER</div>
+            <div className="flex gap-4 items-center">
+                <Button onClick={() => router.push("/dashboard/create-space")} variant="nav" className="flex h-fit items-center gap-2 tracking-wide"> <Plus></Plus> Create Space</Button>
+                <div className="flex rounded-full justify-center items-center bg-blue-400 h-12 w-12">
+                    {userDetails? userDetails.image ? userDetails.image : userDetails.username[0].toUpperCase() : 'W'}
+                </div>
             </div>
-            <div></div>
+            
         </div>
     )
 }

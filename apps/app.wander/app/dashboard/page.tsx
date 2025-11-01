@@ -15,6 +15,9 @@ import Navbar from "./components/navbar";
 type ViewType = "recent" | "organisations" | "my-spaces" | "create-org";
 
 const Dashboard = () => {
+
+  
+
   const router = useRouter();
   const [activeView, setActiveView] = useState<ViewType>("recent");
 
@@ -75,21 +78,7 @@ const Dashboard = () => {
         {/* Header */}
         <div className="mb-8 animate-fade-in">
           <Navbar></Navbar>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
-            <div className="flex flex-col">
-              <div className="text-[4rem] text-neutral-950 font-normal tracking-widest select-none">WANDER </div>
-              <p className="text-lg text-muted-foreground">Manage your spaces and organisations</p>
-            </div>
-            <Button
-              variant="gradient"
-              size="lg"
-              onClick={() => router.push("/dashboard/create-space")}
-              className="gap-2 shadow-glow"
-            >
-              <Plus className="h-5 w-5" />
-              Create New Space
-            </Button>
-          </div>
+          
 
           {/* Navigation Buttons */}
           <div className="flex flex-wrap gap-3 bg-card/50 backdrop-blur-sm p-2 rounded-lg shadow-card">
