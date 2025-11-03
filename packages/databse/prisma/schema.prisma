@@ -41,6 +41,7 @@ model User {
     organisations Organisation[]
 }
 
+
 model Space {
     id String @id @unique @default(cuid())
     name String 
@@ -65,13 +66,15 @@ model UserSpace{
     userid String 
     spaceId String 
     avatarId String @unique
+    lastVisit DateTime? 
 
     user User @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: Cascade)
     space Space @relation(fields: [spaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    avatar Avatar?
+    avatar Avatar @relation(fields: [avatarId], references: [id])
 
     @@unique([userid,spaceId])
 }
+
 
 
 // hierchial organisation structure
@@ -83,7 +86,7 @@ model Organisation {
     parentOrgId String?
     parentOrg Organisation? @relation( "folders" ,fields: [parentOrgId], references: [id])
     childOrg Organisation[] @relation("folders")
-
+    logo String?
     hostId String
     host User @relation(fields: [hostId], references: [id])
 
@@ -94,12 +97,11 @@ model Organisation {
 
 model Avatar{
   id String @id @unique @default(cuid())
-  name String @default("default")
+  name String @unique
   image String 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
-  userSpacesId String @unique
-  userSpace UserSpace @relation(fields: [userSpacesId], references: [id])
+  userSpace UserSpace[]
 }
 
 
@@ -125,7 +127,7 @@ model spawnPoint{
 
 model DefaultMap{
     id String @id @unique @default(cuid())
-    name String 
+    name String @unique
     image String
     thumbnail String
     height Int
@@ -143,6 +145,7 @@ model Element{
     width Int
 
     mapElements MapElement[]
+    @@unique([type,variant])
 }
 
 model MapElement{
