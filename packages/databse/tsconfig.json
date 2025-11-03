@@ -1,0 +1,9 @@
+{
+  "extends" : "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "module":"NodeNext",
+   "target": "ES2022",
+   "skipLibCheck": true
+  }
+}

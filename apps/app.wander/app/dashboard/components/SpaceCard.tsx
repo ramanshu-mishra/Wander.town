@@ -4,7 +4,7 @@ import { Users, Clock, MapPin, Crown } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface Space {
-  id: number;
+  id: string;
   name: string;
   map: string;
   members: number;

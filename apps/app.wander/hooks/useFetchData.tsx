@@ -15,16 +15,16 @@ export function useFetchData<T = unknown>(){
         try {
             const res = await fetch(url, options);
             const json = await res.json();
-            
+            setData(json);
             if (!res.ok) {
                 // Include status and statusText for better error context
                 throw new Error(
                     `HTTP ${res.status}: ${res.statusText}`,
-                    json
+                    json    
                 );
             }
             
-            setData(json);
+            
             return json; 
         } catch (e) {
             const errorObj = e instanceof Error 

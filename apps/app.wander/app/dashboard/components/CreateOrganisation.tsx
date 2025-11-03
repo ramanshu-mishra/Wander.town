@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Users } from "lucide-react";
 
 interface Space {
-  id: number;
+  id: string;
   name: string;
   map: string;
   members: number;
   lastActive: string;
   image: string | null;
-  organisationId: number | null;
+  orgId: string | null;
 }
 
 interface CreateOrganisationProps {

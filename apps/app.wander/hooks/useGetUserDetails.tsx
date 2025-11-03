@@ -1,12 +1,13 @@
 "use client"
 
-import { userInterface } from "@repo/interface";
+import type { combinedInterface } from "@repo/interface";
 import { useEffect, useState } from "react"
+
 
 export default function useGetUserDetails(){
     const [loading,setLoading] = useState(true);
     const [error,setError] = useState<Error|null>(null);
-    const [data,setData] = useState<userInterface|null>(null);
+    const [data,setData] = useState<combinedInterface|null>(null);
     const url = process.env.NEXT_PUBLIC_AuthServer??"http://localhost:3000";
 
 

@@ -7,13 +7,13 @@ import { useRouter } from "next/navigation";
 import { SpaceCard } from "./SpaceCard";
 
 interface Space {
-  id: number;
+  id: string;
   name: string;
   map: string;
   members: number;
   lastActive: string;
   image: string | null;
-  organisationId: number | null;
+  orgId: string | null;
 }
 
 interface MySpacesProps {

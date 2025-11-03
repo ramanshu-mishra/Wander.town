@@ -6,7 +6,7 @@ import { Building2, Plus } from "lucide-react";
 import { OrganisationCard } from "./OrganisationCard";
 
 interface Organisation {
-  id: number;
+  id: string;
   name: string;
   spaces: number;
   members: number;

@@ -279,7 +279,7 @@ catch(e){
 // allow users to createOrgs and place their hosted spaces in orgs
 // allow hosts to promote and demote members
 
-router.post("createSpace", async(req,res)=>{
+router.post("/createSpace", async(req,res)=>{
     // @ts-ignore
     const userId = req.user.id;
     const mapId = req.body.mapId;
@@ -287,7 +287,12 @@ router.post("createSpace", async(req,res)=>{
     const name = req.body.name
     const orgId = req.body.orgId 
 
+    
+
     try{
+        if(!mapId || !avatarId || !name){
+        throw new Error("Invalid Payload");
+    }
     const space = await prisma.space.create({
         data:{
             name: name,
@@ -433,7 +438,7 @@ catch(e){
 }
 })
 
-router.post("addToOrg/:orgId", checkHost, async(req,res)=>{
+router.post("/addToOrg/:orgId", checkHost, async(req,res)=>{
     // @ts-ignore
     const userId = req.user.id;
     const spaceId = req.body.spaceId;
@@ -546,7 +551,8 @@ router.get("/userDetails", async(req,res)=>{
             spaces:{
                 select:{
                     spaceId:true,
-                    avatarId:true
+                    avatarId:true,
+                    lastVisit:true
                 }
             },
             hostSpaces:{
@@ -558,6 +564,25 @@ router.get("/userDetails", async(req,res)=>{
                         select:{
                             id:true,
                             name:true
+                        }
+                    },
+                    map:{
+                        select:{
+                            id: true,
+                            map:{
+                                select:{
+                                    id:true,
+                                    name:true,
+                                    thumbnail:true
+                                }
+                            }
+                        }
+                    },
+                    users:{
+                        select:{
+                            userid:true,
+                            avatarId:true,
+                            lastVisit:true
                         }
                     }
                 }
@@ -572,6 +597,25 @@ router.get("/userDetails", async(req,res)=>{
                             id:true,
                             name:true
                         }
+                    },
+                    map:{
+                        select:{
+                            id: true,
+                            map:{
+                                select:{
+                                    id:true,
+                                    name:true,
+                                    thumbnail:true
+                                }
+                            }
+                        }
+                    },
+                    users:{
+                        select:{
+                            userid:true,
+                            avatarId:true,
+                            lastVisit:true
+                        }
                     }
                 }
             },
@@ -584,6 +628,25 @@ router.get("/userDetails", async(req,res)=>{
                         select:{
                             id:true,
                             name:true
+                        }
+                    },
+                    map:{
+                        select:{
+                            id: true,
+                            map:{
+                                select:{
+                                    id:true,
+                                    name:true,
+                                    thumbnail:true
+                                }
+                            }
+                        }
+                    },
+                    users:{
+                        select:{
+                            userid:true,
+                            avatarId:true,
+                            lastVisit:true
                         }
                     }
                 }
@@ -612,9 +675,25 @@ router.get("/userDetails", async(req,res)=>{
             }
         }
     })
+    const defaultMaps = await prisma.defaultMap.findMany({
+        select:{
+            id:true,
+            name:true,
+            thumbnail:true
+        }
+    });
+    const avatars = await prisma.avatar.findMany({
+        select:{
+            id:true,
+            name:true,
+            image: true
+        }
+    })
 
     res.status(200).json({
-        ...userDetails
+        ...userDetails,
+        avatars : avatars,
+        defaultMaps : defaultMaps
     });
 }
 catch(e){

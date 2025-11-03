@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Users } from "lucide-react";
 
 interface Organisation {
-  id: number;
+  id: string;
   name: string;
   spaces: number;
   members: number;
