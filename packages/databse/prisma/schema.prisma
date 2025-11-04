@@ -54,6 +54,8 @@ model Space {
     users UserSpace[]
     cohosts User[] @relation("cohostSpaces")
     members User[] @relation("memberSpaces")
+
+    allowMemberInvite Boolean @default(true)
     
 
     host User @relation(fields: [hostId],references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -63,16 +65,17 @@ model Space {
 
 model UserSpace{
     id String @id @unique @default(cuid())
-    userid String 
+    userId String 
     spaceId String 
     avatarId String @unique
     lastVisit DateTime? 
-
-    user User @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    role String
+    invitePrivilege Boolean
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     space Space @relation(fields: [spaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     avatar Avatar @relation(fields: [avatarId], references: [id])
 
-    @@unique([userid,spaceId])
+    @@unique([userId,spaceId])
 }
 
 

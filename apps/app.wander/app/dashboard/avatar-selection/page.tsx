@@ -8,36 +8,39 @@ import { ArrowLeft, Check } from "lucide-react";
 import { useUserDetails } from "@/store";
 import { useFetchData } from "@/hooks/useFetchData";
 import { ToastContainer, toast } from "react-toastify";
+import ErrorToast from "../components/ErrorToast";
 
 
 
-function ErrorToast(){
-  return(
-    <div className="flex justify-center items-center  text-neutral-800 ">
-      Something went Wrong
-    </div>
-  )
+
+
+interface SpaceCreationData{
+  id:string,
+  name:string,
+  hostId:string,
+  orgId:string
 }
 
 const AvatarSelection = () => {
-  const {data,loading,error,fetchData,reset} = useFetchData();
+  const {data,loading,error,fetchData,reset,status} = useFetchData();
+  const [_data,setData] = useState<SpaceCreationData|null>(null);
   const {userDetails} = useUserDetails();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
 
-  const avatars = [
-    { id: "1", image: "👨‍💼", name: "Professional" },
-    { id: "2", image: "👩‍💼", name: "Executive" },
-    { id: "3", image: "🧑‍💻", name: "Developer" },
-    { id: "4", image: "👨‍🎨", name: "Creative" },  
-    { id: "5", image: "👩‍🔬", name: "Scientist" },
-    { id: "6", image: "🧑‍🏫", name: "Teacher" },
-    { id: "7", image: "👨‍🚀", name: "Astronaut" },
-    { id: "8", image: "👩‍⚕️", name: "Doctor" },
-  ];
+  // const avatars = [
+  //   { id: "1", image: "👨‍💼", name: "Professional" },
+  //   { id: "2", image: "👩‍💼", name: "Executive" },
+  //   { id: "3", image: "🧑‍💻", name: "Developer" },
+  //   { id: "4", image: "👨‍🎨", name: "Creative" },  
+  //   { id: "5", image: "👩‍🔬", name: "Scientist" },
+  //   { id: "6", image: "🧑‍🏫", name: "Teacher" },
+  //   { id: "7", image: "👨‍🚀", name: "Astronaut" },
+  //   { id: "8", image: "👩‍⚕️", name: "Doctor" },
+  // ];
 
-  const avatars2 = userDetails?.avatars && Array.isArray(userDetails.avatars)
+  const avatars= userDetails?.avatars && Array.isArray(userDetails.avatars)
     ? userDetails.avatars.map((avatar) => ({
         id: avatar.id ?? "",
         name: avatar.image ?? "Unknown Avatar",
@@ -54,7 +57,7 @@ const AvatarSelection = () => {
         return;
       }
       try{
-      const data = fetchData(`${process.env.NEXT_PUBLIC_AuthServer}/createSpace`,{
+      const data = await fetchData(`${process.env.NEXT_PUBLIC_AuthServer}/createSpace`,{
         method: "POST",
         credentials: "include",
         headers:{
@@ -65,7 +68,12 @@ const AvatarSelection = () => {
           avatarId: selectedAvatar,
           name: name
         })
-      } )
+      } );
+      if(status?.ok){
+        setData(data);
+        router.push(`/invitemembers/${_data?.id}`);
+      }
+      
     }
     catch{
       toast(<ErrorToast></ErrorToast>)

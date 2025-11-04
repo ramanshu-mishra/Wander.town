@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
 import { useUserDetails } from "@/store";
 
+
+
 const CreateSpace = () => {
   const router = useRouter();
   const [name,setName] = useState("");
@@ -14,23 +16,24 @@ const CreateSpace = () => {
   
   const {userDetails} = useUserDetails();
 
-  // const maps = userDetails?.defaultMaps && Array.isArray(userDetails.defaultMaps)
-  //   ? userDetails.defaultMaps.map((map) => ({
-  //       id: map.id ?? "",
-  //       name: map.name ?? "Untitled Map",
-  //       image: map.thumbnail ?? null
-  //     }))
-  //   : [{
-  //       id: "default-park",
-  //       name: "Park",
-  //       image: "/assets/map-park.jpg"
-  //     }];
-
- const maps =  [{
+  const maps = userDetails?.defaultMaps && Array.isArray(userDetails.defaultMaps)
+    ? userDetails.defaultMaps.map((map) => ({
+        id: map.id ?? "",
+        name: map.name ?? "Untitled Map",
+        image: map.thumbnail ?? null
+      }))
+    : [{
         id: "default-park",
         name: "Park",
         image: "/assets/map-park.jpg"
       }];
+
+//  const maps =  [{
+//         id: "default-park",
+//         name: "Park",
+//         image: "/assets/map-park.jpg"
+//       }];
+
   const handleContinue = () => {
     if (selectedMap) {
       router.push(`/dashboard/avatar-selection?mapId=${selectedMap}&name=${name}`);

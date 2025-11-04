@@ -305,8 +305,10 @@ router.post("/createSpace", async(req,res)=>{
             },
             users:{
                 create:{
-                    userid: userId,
-                    avatarId: avatarId
+                    userId: userId,
+                    avatarId: avatarId,
+                    role: "host",
+                    invitePrivilege: true
                 }
             }
         }
@@ -336,8 +338,8 @@ router.post("/avatar", async(req,res)=>{
     try{
     const avatar = await prisma.userSpace.update({
         where:{
-            userid_spaceId: {
-                userid: id,
+            userId_spaceId: {
+                userId: id,
                 spaceId: spaceId
             }
         },
@@ -580,7 +582,7 @@ router.get("/userDetails", async(req,res)=>{
                     },
                     users:{
                         select:{
-                            userid:true,
+                            userId:true,
                             avatarId:true,
                             lastVisit:true
                         }
@@ -612,7 +614,7 @@ router.get("/userDetails", async(req,res)=>{
                     },
                     users:{
                         select:{
-                            userid:true,
+                            userId:true,
                             avatarId:true,
                             lastVisit:true
                         }
@@ -644,7 +646,7 @@ router.get("/userDetails", async(req,res)=>{
                     },
                     users:{
                         select:{
-                            userid:true,
+                            userId:true,
                             avatarId:true,
                             lastVisit:true
                         }
@@ -703,6 +705,51 @@ catch(e){
     });
     return;
 }
+})
+
+router.get("/getJoinLink/:spaceId", async(req,res)=>{
+    // @ts-ignore
+    const userId = req.user.id;
+    const spaceId = req.params.spaceId;
+    try{
+    const userSpace = await prisma.userSpace.findFirst({
+        where:{
+            userId: userId,
+            spaceId: spaceId
+        }
+    });
+    // this also helps to not generate link of a space by unauthorized user;
+    if(!userSpace)throw new Error("space not found");
+    else if(!userSpace.invitePrivilege){
+        throw new Error("not allowed to invite");
+    }
+    /* invite link should contain following things
+        referer: userId,
+        spaceId: spaceId
+    */
+
+    const jwtPayload = {
+        referer : userId,
+        spaceId: spaceId
+    }
+    const linkToken = jwt.sign(jwtPayload, process.env.JWT_SECRET as string);
+    const inviteLink = `${process.env.NEXT_PUBLIC_APP}/invite/${linkToken}`;
+
+    res.status(200).json({
+        inviteLink: inviteLink
+    });
+    return;
+
+}
+catch(e){
+    const message = e instanceof Error ? e.message : "Server Side Error";
+    res.status(500).json({
+        message
+    });
+}
+    
+
+    
 })
 
 

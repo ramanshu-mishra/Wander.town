@@ -17,10 +17,12 @@
     "@types/passport-local": "^1.0.38"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/ws": "^8.18.1",
     "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.10",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
