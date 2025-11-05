@@ -66,3 +66,32 @@ export type combinedInterface = userInterface & {
     avatars: avatarsInteraface[];
     defaultMaps: defaultMapsInterface[];
 };
+
+
+export interface previewInterface{
+    id:string,
+    name:string,
+    cohosts: previewUserInterface[],
+    members: previewUserInterface[],
+    map:{
+        map:{
+            thumbnail:string
+        }
+    }
+}
+
+export interface UserInterface{
+    id:string,
+    name:string,
+    username:string,
+    spaces:{
+        spaceId: string,
+        avatarId:string
+    }[]
+}
+
+export interface previewUserInterface{
+    id:string,
+    name:string,
+    username:string
+}

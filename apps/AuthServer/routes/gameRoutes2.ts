@@ -1,7 +1,7 @@
 import express from "express";
 import { PrismaClient } from "@repo/database/prisma";
 import { isAuthenticated, checkHost } from "../middlewares/middleware.js";
-import jwt from "jsonwebtoken";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 
 
 const router = express.Router();
@@ -315,7 +315,7 @@ router.post("/createSpace", async(req,res)=>{
     });
 
     res.status(200).json({
-        space
+        ...space
     });
     return;
 }
@@ -733,7 +733,7 @@ router.get("/getJoinLink/:spaceId", async(req,res)=>{
         spaceId: spaceId
     }
     const linkToken = jwt.sign(jwtPayload, process.env.JWT_SECRET as string);
-    const inviteLink = `${process.env.NEXT_PUBLIC_APP}/invite/${linkToken}`;
+    const inviteLink = `${process.env.FRONTEND}/invite/${linkToken}`;
 
     res.status(200).json({
         inviteLink: inviteLink
@@ -748,8 +748,48 @@ catch(e){
     });
 }
     
+})
 
+
+
+router.get("/spacePreview/:inviteId", async(req,res)=>{
+    const inviteId= req.params.inviteId;
+    const payload = JSON.parse(jwt.decode(inviteId) as string);
+    console.log(payload);
+    const spaceId = payload?.spaceId;
+    try{
+    const space = await prisma.space.findFirst({
+        where:{
+            id: spaceId
+        },
+        select:{
+            id: true,
+            name: true,
+            members: true,
+            host: true,
+            cohosts: true,
+            map:{
+                select:{
+                    map:{
+                        select:{
+                            thumbnail: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+    res.status(200).json({
+        ...space
+    })
+}
+catch(e){
+    const message  = e instanceof Error ? e.message : "Server Side Error";
+    res.status(500).json({
+        message
+    });
     
+}
 })
 
 

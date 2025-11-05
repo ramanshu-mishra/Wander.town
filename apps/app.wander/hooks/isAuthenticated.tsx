@@ -8,11 +8,6 @@ export function useIsAuthenticated(){
     const [data,setData] = useState<boolean|null>(null);
     
     async function checkAuth(){
-       await new Promise((r)=>{
-        setTimeout(()=>{
-            r(0);
-        }, 5000);
-       })
         try{
         const res = await fetch(`${process.env.AuthServer}/`);
         if(res.ok){

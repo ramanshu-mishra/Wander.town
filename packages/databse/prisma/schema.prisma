@@ -67,7 +67,7 @@ model UserSpace{
     id String @id @unique @default(cuid())
     userId String 
     spaceId String 
-    avatarId String @unique
+    avatarId String 
     lastVisit DateTime? 
     role String
     invitePrivilege Boolean

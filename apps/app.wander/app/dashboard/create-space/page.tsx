@@ -28,11 +28,6 @@ const CreateSpace = () => {
         image: "/assets/map-park.jpg"
       }];
 
-//  const maps =  [{
-//         id: "default-park",
-//         name: "Park",
-//         image: "/assets/map-park.jpg"
-//       }];
 
   const handleContinue = () => {
     if (selectedMap) {

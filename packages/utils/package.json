@@ -12,7 +12,8 @@
   "description": "",
   "exports": {
     "./zodTypes": "./dist/zodTypes.js",
-    "./cn" : "./dist/cn.js"
+    "./cn" : "./dist/cn.js",
+    "./FetchError" : "./dist/FetchError.js"
   },
   "dependencies": {
     "clsx": "^2.1.1",

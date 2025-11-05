@@ -8,7 +8,9 @@ import { ArrowLeft, Check } from "lucide-react";
 import { useUserDetails } from "@/store";
 import { useFetchData } from "@/hooks/useFetchData";
 import { ToastContainer, toast } from "react-toastify";
-import ErrorToast from "../components/ErrorToast";
+import ErrorToast from "../../../components/ErrorToast";
+import { FetchError } from "@repo/utils/FetchError";
+import Spinner from "@/components/spinner";
 
 
 
@@ -22,23 +24,14 @@ interface SpaceCreationData{
 }
 
 const AvatarSelection = () => {
-  const {data,loading,error,fetchData,reset,status} = useFetchData();
+  const {data,loading,fetchData,reset} = useFetchData();
   const [_data,setData] = useState<SpaceCreationData|null>(null);
+ 
   const {userDetails} = useUserDetails();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
 
-  // const avatars = [
-  //   { id: "1", image: "👨‍💼", name: "Professional" },
-  //   { id: "2", image: "👩‍💼", name: "Executive" },
-  //   { id: "3", image: "🧑‍💻", name: "Developer" },
-  //   { id: "4", image: "👨‍🎨", name: "Creative" },  
-  //   { id: "5", image: "👩‍🔬", name: "Scientist" },
-  //   { id: "6", image: "🧑‍🏫", name: "Teacher" },
-  //   { id: "7", image: "👨‍🚀", name: "Astronaut" },
-  //   { id: "8", image: "👩‍⚕️", name: "Doctor" },
-  // ];
 
   const avatars= userDetails?.avatars && Array.isArray(userDetails.avatars)
     ? userDetails.avatars.map((avatar) => ({
@@ -69,14 +62,23 @@ const AvatarSelection = () => {
           name: name
         })
       } );
-      if(status?.ok){
+      console.log(data);
         setData(data);
-        router.push(`/invitemembers/${_data?.id}`);
-      }
-      
     }
-    catch{
-      toast(<ErrorToast></ErrorToast>)
+    catch(e){
+      
+      if(e instanceof FetchError){
+        if(e.json.message = "unauthorized-session"){
+            router.push("/login");
+        }
+          toast(<ErrorToast message={e.json.message}></ErrorToast>)
+      }
+      else if(e instanceof Error){
+        toast(<ErrorToast message={e.message}></ErrorToast>)
+      }
+      else{
+        toast(<ErrorToast></ErrorToast>)
+      }
     }
     finally{
       reset();
@@ -84,15 +86,19 @@ const AvatarSelection = () => {
     }
   };
 
+
   useEffect(()=>{
-    if(error && data?.message == "unauthorized-session"){
-      console.log(error.message);
-      router.push("/login");
+    if(!userDetails){
+      router.push("/dashboard");
+    } 
+  },[])
+
+  useEffect(()=>{
+    
+    if(_data){
+    router.push(`/dashboard/invitemembers/${_data.id}`)
     }
-    else if(error){
-      toast(ErrorToast);
-    }
-  },[error])
+  },[_data]);
 
   return (
     <div className="min-h-screen bg-gradient-hero">
@@ -142,8 +148,9 @@ const AvatarSelection = () => {
         {/* Continue Button */}
         {selectedAvatar && (
           <div className="flex justify-center animate-fade-in">
-            <Button variant="gradient" size="lg" onClick={createSpace}>
+            <Button variant="gradient" className="flex gap-5" size="lg" onClick={createSpace}>
               create Space
+              {loading && <Spinner color={"var(--color-neutral-50)"}></Spinner>}
             </Button>
           </div>
         )}
