@@ -13,7 +13,7 @@ export default function InvitePreview({image, onClick, spaceName,members}: {imag
                         {/* Image wrapper must be relative, have explicit height, and overflow-hidden for Next/Image fill to behave */}
                         <div
                           className="w-80 h-70 relative bg-neutral-400 rounded-lg overflow-hidden skeleton"
-                          onClick={onClick}
+                          
                         >
                             <Image
                                 src={image}
@@ -30,7 +30,7 @@ export default function InvitePreview({image, onClick, spaceName,members}: {imag
                                     {spaceName}
                                 </div>
                                 <div className="self-end text-white text-sm font-medium">{members} {members == 1 ? "member" :"members"}</div>
-                                <Button className="py-1 px-10 ">JOIN</Button>
+                                <Button className="py-1 px-10 " onClick={onClick}>JOIN</Button>
                             </div>
                             
                         </div>

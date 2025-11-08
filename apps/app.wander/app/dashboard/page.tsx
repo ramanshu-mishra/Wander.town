@@ -1,6 +1,6 @@
 "use client";
 import Loading from "@/page/loading";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Cookie from "js-cookie"
@@ -13,7 +13,7 @@ import {
 } from "./components";
 import Navbar from "./components/navbar";
 import useGetUserDetails from "@/hooks/useGetUserDetails";
-import { useUserDetails } from "@/store";
+import { useUserDetails, useUserProfile } from "@/store";
 import {orgInterface, spaceInterface} from "@repo/interface"
 
 type ViewType = "recent" | "organisations" | "my-spaces" | "create-org";
@@ -91,7 +91,9 @@ const Dashboard = () => {
 
   const {loading,error,data} = useGetUserDetails();
   const {setUserDetails} = useUserDetails();
-  
+  const {active,setActive} = useUserProfile();
+  const profileRef = useRef(null);
+  const router = useRouter();
 
   useEffect(()=>{
     if(data){
@@ -100,13 +102,19 @@ const Dashboard = () => {
     }
   }, [data, setUserDetails]);
 
-  const router = useRouter();
+  async function handleLogout(){
+    const res = await fetch(`${process.env.NEXT_PUBLIC_AuthServer}/logout`,{
+      credentials: "include",
+    })
+      router.push("/login");
+  }
+
   useEffect(()=>{
     if(error){
-      Cookie.remove("connect.sid");
-      router.push("/login");
+      handleLogout();
     }
-  },[error, router]);
+  },[error]);
+
   const [activeView, setActiveView] = useState<ViewType>("recent");
 
   // Mock data for spaces
@@ -173,11 +181,12 @@ const organisations = data?.organisations?.map((org)=>({
     <>
     {loading && <Loading></Loading>}
     {!loading  && data && 
+    <>
+    <Navbar className = "translate-y-2"></Navbar>
     <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 animate-fade-in">
-          <Navbar></Navbar>
           
 
           {/* Navigation Buttons */}
@@ -221,6 +230,7 @@ const organisations = data?.organisations?.map((org)=>({
         {renderContent()}
       </div>
     </div>
+    </>
     }  
     </>
     

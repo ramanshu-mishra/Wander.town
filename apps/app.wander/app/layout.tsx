@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import OuterWrapper from "./OuterWrapper";
 import "./globals.css";
 import { Toaster } from "sonner";
 
@@ -34,7 +35,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
       >
+        <OuterWrapper>
         {children}
+        </OuterWrapper>
         <Toaster position="top-center" richColors />
       </body>
     </html>

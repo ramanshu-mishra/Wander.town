@@ -28,7 +28,7 @@ model User {
     username String @unique
     name String 
     password String?
-    email String?
+    email String? 
     activeSession String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt @default(now())
@@ -136,7 +136,7 @@ model DefaultMap{
     height Int
     width Int
 
-    maps Map[]
+    maps Map[]  
 }
 
 model Element{

@@ -9,7 +9,7 @@ export function useIsAuthenticated(){
     
     async function checkAuth(){
         try{
-        const res = await fetch(`${process.env.AuthServer}/`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_AuthServer}`);
         if(res.ok){
             setData(true);
         }

@@ -9,6 +9,7 @@ import {loginSchema, signupSchema} from "@repo/utils/zodTypes";
 import {PrismaClient} from "@repo/database/prisma";
 const prisma = new PrismaClient();
 import { isAuthenticated } from "../middlewares/middleware.js";
+import { success } from "zod";
 
 
 
@@ -160,6 +161,8 @@ router.post("/signUp", async (req,res)=>{
     }   
 })
 
+
+
 router.get("/", isAuthenticated, (req:Request,res:Response)=>{
     
     res.status(200).json({message: "server running fine"})
@@ -213,6 +216,31 @@ catch(e){
 }
 
 });
+
+
+
+router.get("/logout", async(req,res,next)=>{
+    req.logOut((err)=>{
+        if(err){
+            res.status(500).json({
+                message: "Server Side Error"
+            });
+        }
+        req.session.destroy(err=>{
+            if(err) return next(err);
+
+            res.clearCookie("connect.sid",{
+                sameSite: "lax",
+                httpOnly: false
+            });
+
+            res.status(200).json({
+                success: true,
+                messge: "user logged out"
+            })
+        })
+    })
+})
 
 
 export default router;

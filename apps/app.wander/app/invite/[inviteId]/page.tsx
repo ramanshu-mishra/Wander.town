@@ -13,7 +13,9 @@ import Skeleton from "@/components/skeletons/inviteSkeleton";
 import InvitePreview from "@/components/invitePreview";
 import Sorry from "@/public/assets/Sorry.png";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {Repeat2Icon, RotateCcw} from "lucide-react"
+
 
 
 
@@ -26,12 +28,14 @@ export default function Page(){
     const [_data,setData] = useState<previewInterface|null>(null);
     const [error,setError] = useState<Error|null>(null);
     const [retry , setRetry] = useState(true);
+    const router = useRouter();
 
     async function getSpacePreview(){
         
         try{
         const preview = await fetchData(`${process.env.NEXT_PUBLIC_AuthServer}/spacePreview/${inviteId}`,{credentials: "include"});
         setData(preview);
+        console.log(preview);   
         }
         catch(e){
             if(e instanceof FetchError){
@@ -94,12 +98,16 @@ transition={{
             </div>
             <div className=" flex-1 h-screen">
                 {loading && <Skeleton></Skeleton>}
-                {error && <ErrorCard></ErrorCard> }
-                {/* <InvitePreview image="/assets/map-cafe.jpg" spaceName="RamSpace" members={1}></InvitePreview> */}
+                
                 {!loading && error && <div className="flex flex-col justify-center items-center select-none ">
                     <ErrorCard></ErrorCard>
-                    { !retry && <RotateCcw onClick={getSpacePreview} className="hover:scale-125 active:scale-115 scale-120"></RotateCcw>}
+                    { retry && <RotateCcw onClick={getSpacePreview} className="hover:scale-125 active:scale-115 scale-120"></RotateCcw>}
                 </div>}
+                {!loading && _data && 
+                <InvitePreview spaceName={_data.name} image={_data.map.map.thumbnail} members={_data.cohosts.length+ _data.members.length + 1} onClick={()=>{
+                    router.push(`/space/${_data.id}`);
+                }}></InvitePreview>
+                }
                 
             </div>
           

@@ -26,7 +26,7 @@ export const SpaceCard = ({ space, index }: SpaceCardProps) => {
       key={space.id}
       className="group overflow-hidden shadow-card hover:shadow-elevated transition-all duration-300 cursor-pointer animate-fade-in border-0 bg-card/50 backdrop-blur-sm"
       style={{ animationDelay: `${index * 100}ms` }}
-      onClick={() => router.push("/dashboard/maps")}
+      onClick={() => router.push(`/space/${space.id}`)}
     >
       <div className="relative h-48 overflow-hidden">
         {space.image ? (

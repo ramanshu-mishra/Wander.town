@@ -165,11 +165,17 @@ router.get("/space/:spaceId", async(req,res)=>{
             id: spaceId
         },
         include:{
-             host:{select: {id:true,username:true,name:true,email:true}},
-            cohosts:{select: {id:true,username:true,name:true,email:true}},
-            members:{select: {id:true,username:true,name:true,email:true}},
+             host:{select: {id:true,username:true,name:true,email:true, image: true}},
+            cohosts:{select: {id:true,username:true,name:true,email:true, image:true}},
+            members:{select: {id:true,username:true,name:true,email:true, image:true}},
+            
             users:{ include: {avatar: true}},
-            map:{include:{map:true}}
+            map:{include:{map:true,
+                elements: {include:{
+                    element: true
+                }},
+                spawnPoints : true
+            }}
         }
     });
 
@@ -754,10 +760,12 @@ catch(e){
 
 router.get("/spacePreview/:inviteId", async(req,res)=>{
     const inviteId= req.params.inviteId;
-    const payload = JSON.parse(jwt.decode(inviteId) as string);
-    console.log(payload);
-    const spaceId = payload?.spaceId;
+    
     try{
+        if(!inviteId)throw new Error("invalid_token");
+        const payload = jwt.decode(inviteId);
+    console.log(payload);
+    const spaceId = (payload as JwtPayload)?.spaceId;
     const space = await prisma.space.findFirst({
         where:{
             id: spaceId

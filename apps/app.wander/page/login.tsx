@@ -11,7 +11,7 @@ import {motion} from "motion/react"
 
 
 export default function Login(){
-    const router = useRouter()
+    const router = useRouter();
     const [username,setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error,setError] = useState<Error|null>(null);
